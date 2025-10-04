@@ -1,0 +1,163 @@
+{
+  "logging": {
+    "level": "info",
+    "enableConsoleLog": true,
+    "enableConsoleColors": true,
+    "logFile": "/var/log/miningcore/miningcore.log",
+    "logBaseDirectory": "/var/log/miningcore",
+    "perPoolLogFile": false
+  },
+  "api": {
+    "enabled": true,
+    "listenAddress": "0.0.0.0",
+    "listenPort": 4000,
+    "enableAdminMode": true,
+    "adminPassword": "Password@1313",
+    "rateLimiting": {
+      "disabled": true,
+      "rules": []
+    },
+    "enableCors": true
+  },
+  "pools": [
+    {
+      "id": "bch",
+      "enabled": true,
+      "coin": "bitcoin-cash",
+      "address": "YOUR_BCH_WALLET_ADDRESS",
+      "rewardRecipients": [],
+      "blockTimeInterval": 60,
+      "paymentProcessing": {
+        "enabled": true,
+        "interval": 3600,
+        "shareRecoveryFile": "recovered-shares.txt",
+        "enforcePaymentRecipients": false,
+        "minimumPayment": 0.01,
+        "payoutScheme": "PPLNS",
+        "payoutSchemeConfig": {
+          "factor": 2.0
+        },
+        "minimumPaymentToPaymentId": 0.1,
+        "payoutRecipients": [],
+        "payoutOnBlockFound": false,
+        "payoutOnBlockMinimumConfirmations": 3,
+        "payoutOnBlockMinimumCoins": 0.1,
+        "payoutOnBlockMaximumCoins": 0.1,
+        "payoutOnBlockMaximumTime": 0,
+        "payoutOnBlockMinimumTime": 0,
+        "payoutOnBlockMinimumBlocks": 0,
+        "payoutOnBlockMaximumBlocks": 0,
+        "payoutOnBlockMinimumShares": 0,
+        "payoutOnBlockMaximumShares": 0,
+        "payoutOnBlockMinimumEffort": 0,
+        "payoutOnBlockMaximumEffort": 0,
+        "payoutOnBlockMinimumEffortPercent": 0,
+        "payoutOnBlockMaximumEffortPercent": 0,
+        "payoutOnBlockMinimumEffortTime": 0,
+        "payoutOnBlockMaximumEffortTime": 0
+      },
+      "daemons": [
+        {
+          "host": "bch-node",
+          "port": 8332,
+          "user": "rpcuser",
+          "password": "rpcpassword"
+        }
+      ],
+      "ports": {
+        "3333": {
+          "listenAddress": "0.0.0.0",
+          "difficulty": 0.5,
+          "varDiff": {
+            "minDiff": 0.1,
+            "maxDiff": 1000000,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          },
+          "tls": false
+        }
+      }
+    },
+    {
+      "id": "octa",
+      "enabled": true,
+      "coin": "octa",
+      "address": "YOUR_OCTA_WALLET_ADDRESS",
+      "rewardRecipients": [],
+      "blockTimeInterval": 60,
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 1,
+        "payoutScheme": "PPLNS",
+        "payoutSchemeConfig": {
+          "factor": 2.0
+        },
+        "payoutInterval": 3600,
+        "minimumPaymentToPaymentId": 10
+      },
+      "daemons": [
+        {
+          "host": "octa-node",
+          "port": 8545,
+          "user": "",
+          "password": ""
+        }
+      ],
+      "ports": {
+        "3334": {
+          "listenAddress": "0.0.0.0",
+          "difficulty": 0.5,
+          "varDiff": {
+            "minDiff": 0.1,
+            "maxDiff": 1000000,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          },
+          "tls": false
+        }
+      }
+    },
+    {
+      "id": "alph",
+      "enabled": true,
+      "coin": "alephium",
+      "address": "YOUR_ALPH_WALLET_ADDRESS",
+      "rewardRecipients": [],
+      "blockTimeInterval": 60,
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 1,
+        "payoutScheme": "PPLNS",
+        "payoutSchemeConfig": {
+          "factor": 2.0
+        },
+        "payoutInterval": 3600,
+        "minimumPaymentToPaymentId": 10
+      },
+      "daemons": [
+        {
+          "host": "alph-node",
+          "port": 12973,
+          "user": "",
+          "password": "e8d8e8a8b8c8d8e8f8a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6"
+        }
+      ],
+      "ports": {
+        "3335": {
+          "listenAddress": "0.0.0.0",
+          "difficulty": 0.5,
+          "varDiff": {
+            "minDiff": 0.1,
+            "maxDiff": 1000000,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          },
+          "tls": false
+        }
+      }
+    }
+  ]
+}

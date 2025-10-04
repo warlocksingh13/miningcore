@@ -1,0 +1,12 @@
+apiVersion: 1
+
+providers:
+  - name: 'Mining Pool'
+    orgId: 1
+    folder: 'Mining Pool'
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: true

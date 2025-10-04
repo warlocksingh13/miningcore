@@ -1,0 +1,90 @@
+{
+  "coins": [
+    {
+      "id": "bitcoin",
+      "name": "Bitcoin",
+      "symbol": "BTC",
+      "algorithm": "sha256",
+      "family": {
+        "type": "bitcoin",
+        "coinbaseTxVersion": 2
+      },
+      "blockTime": 600,
+      "blockReward": 6.25,
+      "blockrewardmultiplicator": 100000000,
+      "network": {
+        "type": "mainnet"
+      },
+      "explorer": {
+        "blockLink": "https://blockchair.com/bitcoin/block/{0}",
+        "txLink": "https://blockchair.com/bitcoin/transaction/{0}",
+        "addressLink": "https://blockchair.com/bitcoin/address/{0}"
+      }
+    },
+    {
+      "id": "bitcoin-cash",
+      "name": "Bitcoin Cash",
+      "symbol": "BCH",
+      "algorithm": "sha256",
+      "family": {
+        "type": "bitcoin",
+        "coinbaseTxVersion": 2
+      },
+      "blockTime": 600,
+      "blockReward": 6.25,
+      "blockrewardmultiplicator": 100000000,
+      "network": {
+        "type": "mainnet"
+      },
+      "explorer": {
+        "blockLink": "https://blockchair.com/bitcoin-cash/block/{0}",
+        "txLink": "https://blockchair.com/bitcoin-cash/transaction/{0}",
+        "addressLink": "https://blockchair.com/bitcoin-cash/address/{0}"
+      }
+    },
+    {
+      "id": "octa",
+      "name": "OctaSpace",
+      "symbol": "OCTA",
+      "algorithm": "ethash",
+      "family": {
+        "type": "ethereum"
+      },
+      "blockTime": 15,
+      "blockReward": 2,
+      "blockrewardmultiplicator": 1000000000000000000,
+      "network": {
+        "type": "mainnet",
+        "chainId": 800001,
+        "networkId": 1,
+        "genesisHash": "0x7c6c07b0a0a9c3d8b5f9c5f3f5b7c3d8a5f9c5f3f5b7c3d8a5f9c5f3f5b7c3d8"
+      },
+      "explorer": {
+        "blockLink": "https://explorer.octaspace.com/block/{0}",
+        "txLink": "https://explorer.octaspace.com/tx/{0}",
+        "addressLink": "https://explorer.octaspace.com/address/{0}"
+      }
+    },
+    {
+      "id": "alephium",
+      "name": "Alephium",
+      "symbol": "ALPH",
+      "algorithm": "blake3",
+      "family": {
+        "type": "alephium"
+      },
+      "blockTime": 64,
+      "blockReward": 3,
+      "blockrewardmultiplicator": 1000000000000000000,
+      "network": {
+        "type": "mainnet",
+        "networkId": 2
+      },
+      "explorer": {
+        "blockLink": "https://explorer.alephium.org/blocks/{0}",
+        "txLink": "https://explorer.alephium.org/transactions/{0}",
+        "addressLink": "https://explorer.alephium.org/addresses/{0}"
+      }
+    }
+  ]
+}

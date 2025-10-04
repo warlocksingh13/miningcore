@@ -1,0 +1,506 @@
+{
+  "logging": {
+    "level": "info",
+    "enableConsoleLog": true,
+    "enableConsoleColors": true,
+    "logFile": "/var/log/miningcore/miningcore.log",
+    "apiLogFile": "/var/log/miningcore/api.log",
+    "logBaseDirectory": "/var/log/miningcore",
+    "perPoolLogFile": true
+  },
+  "banning": {
+    "manager": "Integrated",
+    "banOnJunkReceive": true,
+    "banOnInvalidShares": false
+  },
+  "notifications": {
+    "enabled": false,
+    "email": {
+      "host": "smtp.example.com",
+      "port": 587,
+      "user": "user",
+      "password": "Password@1313",
+      "fromAddress": "admin@example.com",
+      "fromName": "MiningCore"
+    },
+    "admin": {
+      "enabled": false,
+      "emailAddress": "admin@example.com",
+      "notifyBlockFound": true
+    }
+  },
+  "persistence": {
+    "postgres": {
+      "host": "postgres",
+      "port": 5432,
+      "user": "miningcore",
+      "password": "Password@1313",
+      "database": "miningcore"
+    }
+  },
+  "paymentProcessing": {
+    "enabled": true,
+    "interval": 600,
+    "shareRecoveryFile": "recovered-shares.txt",
+    "coinbaseString": "Mined with MiningCore"
+  },
+  "api": {
+    "enabled": true,
+    "listenAddress": "0.0.0.0",
+    "port": 4000,
+    "metricsIpWhitelist": [
+      "127.0.0.1",
+      "::1",
+      "172.17.0.1",
+      "172.18.0.1",
+      "192.168.2.100"
+    ],
+    "rateLimiting": {
+      "disabled": true,
+      "rules": [
+        {
+          "Endpoint": "*",
+          "Period": "1s",
+          "Limit": 5
+        }
+      ],
+      "ipWhitelist": []
+    },
+    "security": {
+      "cors": {
+        "enabled": true,
+        "allowedOrigins": [
+          "http://localhost:3000",
+          "http://127.0.0.1:3000",
+          "http://192.168.1.200:3000"
+        ]
+      },
+      "requestValidation": {
+        "enabled": true,
+        "maxRequestBodySize": 1048576
+      }
+    }
+  },
+  "network": {
+    "ipWhitelist": [
+      "127.0.0.1"
+    ]
+  },
+  "pools": [
+    {
+      "id": "alph",
+      "name": "Alephium",
+      "symbol": "ALPH",
+      "enabled": false,
+      "coin": "alephium",
+      "address": "17PmCe7yK73RPxtsdcAq3bszEUHEK1AsGsBRX1ovJPYHU",
+      "apiEndpoint": "http://alph-node:12973/api/v0",
+      "network": "mainnet",
+      "apiKey": "b0b84bc9396c2bdfccae2b967be045097838f70f4855446e8184c65cfdad23e7",
+      "ports": {
+        "5005": {
+          "listen": "0.0.0.0:5005",
+          "difficulty": 100000,
+          "protocol": "stratum+tcp"
+        }
+      },
+      "rewardRecipients": [
+        {
+          "address": "17PmCe7yK73RPxtsdcAq3bszEUHEK1AsGsBRX1ovJPYHU",
+          "percentage": 1.0
+        }
+      ],
+      "daemons": [
+        {
+          "host": "alph-node",
+          "port": 12973,
+          "protocol": "http",
+          "apiEndpoint": "/api/v0",
+          "apiKey": "b0b84bc9396c2bdfccae2b967be045097838f70f4855446e8184c65cfdad23e7"
+        }
+      ],
+      "rewardStrategy": {
+        "type": "pplns",
+        "pplnsTimeWindow": "00:10:00"
+      },
+      "blockRefreshInterval": 1000,
+      "jobRebroadcastTimeout": 30,
+      "clientConnectionTimeout": 300,
+      "banning": {
+        "enabled": true,
+        "time": 600,
+        "invalidPercent": 50,
+        "checkThreshold": 500,
+        "ipRangeSubnetSize": 24
+      },
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 0.001,
+        "payoutScheme": "PPLNS",
+        "pplnsTimeWindow": "00:10:00",
+        "blockTimeWindow": 100,
+        "minimumConfirmations": 10
+      }
+    },
+    {
+      "id": "bch",
+      "name": "Bitcoin Cash",
+      "enabled": true,
+      "coin": "bitcoin-cash",
+      "address": "1EcyT8oCrF5NWPP6G9UNCnWv53AZyWmncM",
+      "addressType": "legacy",
+      "rewardRecipients": [
+        {
+          "address": "1EcyT8oCrF5NWPP6G9UNCnWv53AZyWmncM",
+          "percentage": 1
+        }
+      ],
+      "ports": {
+        "5004": {
+          "name": "General ASIC",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 1024,
+          "varDiff": {
+            "minDiff": 1,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          }
+        },
+        "5104": {
+          "name": "NerdMiner",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 0.001,
+          "varDiff": {
+            "minDiff": 0.0001,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          }
+        }
+      },
+      "daemons": [
+        {
+          "host": "bch-node",
+          "port": 8332,
+          "user": "bchrpcuser",
+          "password": "Password@1313"
+        }
+      ],
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 1,
+        "payoutScheme": "SOLO",
+        "payoutSchemeConfig": {
+          "factor": 2.0
+        }
+      },
+      "minerBonusPercentage": 0,
+      "enableAsicBoost": true,
+      "blockRefreshInterval": 500,
+      "jobRebroadcastTimeout": 10,
+      "clientConnectionTimeout": 600,
+      "banning": {
+        "enabled": true,
+        "time": 600,
+        "invalidPercent": 50,
+        "checkThreshold": 50
+      }
+    },
+    {
+      "id": "octa",
+      "name": "OctaSpace",
+      "enabled": true,
+      "coin": "octaspace",
+      "address": "0xccAADE651EB1c24806CecA398D5fCAD9aAfA4D19",
+      "rewardRecipients": [
+        {
+          "address": "0xccAADE651EB1c24806CecA398D5fCAD9aAfA4D19",
+          "percentage": 1
+        }
+      ],
+      "ports": {
+        "8008": {
+          "name": "Jasminer 16q (PPLNS)",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 1000,
+          "varDiff": {
+            "minDiff": 100,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          },
+          "protocol": "stratum"
+        },
+        "8018": {
+          "name": "Jasminer 16q Low-Diff (PPLNS)",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 0.1,
+          "varDiff": {
+            "minDiff": 0.01,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          },
+          "protocol": "stratum"
+        }
+      },
+      "daemons": [
+        {
+          "host": "octa-node",
+          "port": 8545,
+          "user": "",
+          "password": ""
+        }
+      ],
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 1,
+        "payoutScheme": "PPLNS",
+        "payoutSchemeConfig": {
+          "factor": 2.0,
+          "pplnsTimeWindow": "00:10:00"
+        }
+      },
+      "minerBonusPercentage": 0,
+      "blockRefreshInterval": 500,
+      "jobRebroadcastTimeout": 10,
+      "clientConnectionTimeout": 600,
+      "banning": {
+        "enabled": true,
+        "time": 600,
+        "invalidPercent": 50,
+        "checkThreshold": 50
+      }
+    },
+    {
+      "id": "bch-pplns",
+      "name": "Bitcoin Cash",
+      "enabled": false,
+      "coin": "bitcoin-cash",
+      "address": "1EcyT8oCrF5NWPP6G9UNCnWv53AZyWmncM",
+      "addressType": "legacy",
+      "rewardRecipients": [
+        {
+          "address": "1EcyT8oCrF5NWPP6G9UNCnWv53AZyWmncM",
+          "percentage": 1
+        }
+      ],
+      "ports": {
+        "5006": {
+          "name": "General ASIC (PPLNS)",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 1024,
+          "varDiff": {
+            "minDiff": 1,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          }
+        },
+        "5106": {
+          "name": "NerdMiner (PPLNS)",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 0.001,
+          "varDiff": {
+            "minDiff": 0.0001,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          }
+        }
+      },
+      "daemons": [
+        {
+          "host": "bch-node",
+          "port": 8332,
+          "user": "bchrpcuser",
+          "password": "Password@1313"
+        }
+      ],
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 1,
+        "payoutScheme": "PPLNS",
+        "payoutSchemeConfig": {
+          "factor": 2.0,
+          "pplnsTimeWindow": "00:10:00"
+        }
+      },
+      "minerBonusPercentage": 0,
+      "enableAsicBoost": true,
+      "blockRefreshInterval": 500,
+      "jobRebroadcastTimeout": 10,
+      "clientConnectionTimeout": 600,
+      "banning": {
+        "enabled": true,
+        "time": 600,
+        "invalidPercent": 50,
+        "checkThreshold": 50
+      }
+    },
+    {
+      "id": "btc",
+      "name": "Bitcoin",
+      "enabled": true,
+      "coin": "bitcoin",
+      "address": "1EcyT8oCrF5NWPP6G9UNCnWv53AZyWmncM",
+      "rewardRecipients": [
+        {
+          "address": "1EcyT8oCrF5NWPP6G9UNCnWv53AZyWmncM",
+          "percentage": 1
+        }
+      ],
+      "ports": {
+        "3333": {
+          "name": "Low VarDiff \u00b7 16K\u2013256K (PPLNS)",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 16384,
+          "varDiff": {
+            "minDiff": 16384,
+            "maxDiff": 262144,
+            "targetTime": 20,
+            "retargetTime": 60,
+            "variancePercent": 30
+          },
+          "protocol": "stratum"
+        },
+        "3355": {
+          "name": "Medium VarDiff \u00b7 256K\u20132M (PPLNS)",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 262144,
+          "varDiff": {
+            "minDiff": 262144,
+            "maxDiff": 2097152,
+            "targetTime": 20,
+            "retargetTime": 60,
+            "variancePercent": 30
+          },
+          "protocol": "stratum"
+        },
+        "3377": {
+          "name": "High VarDiff \u00b7 2M\u201316M (PPLNS)",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 2097152,
+          "varDiff": {
+            "minDiff": 2097152,
+            "maxDiff": 16777216,
+            "targetTime": 20,
+            "retargetTime": 60,
+            "variancePercent": 30
+          },
+          "protocol": "stratum"
+        }
+      },
+      "daemons": [
+        {
+          "host": "btc-node",
+          "port": 8332,
+          "user": "btcrpcuser",
+          "password": "Password@1313"
+        }
+      ],
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 0.00016,
+        "payoutScheme": "PPLNS",
+        "payoutSchemeConfig": {
+          "factor": 2.0,
+          "pplnsTimeWindow": "00:10:00"
+        }
+      },
+      "minerBonusPercentage": 0,
+      "enableAsicBoost": true,
+      "blockRefreshInterval": 500,
+      "jobRebroadcastTimeout": 10,
+      "clientConnectionTimeout": 600,
+      "banning": {
+        "enabled": true,
+        "time": 600,
+        "invalidPercent": 50,
+        "checkThreshold": 50
+      }
+    },
+    {
+      "id": "btc-solo",
+      "name": "Bitcoin SOLO",
+      "enabled": true,
+      "coin": "bitcoin",
+      "address": "1EcyT8oCrF5NWPP6G9UNCnWv53AZyWmncM",
+      "rewardRecipients": [
+        {
+          "address": "1EcyT8oCrF5NWPP6G9UNCnWv53AZyWmncM",
+          "percentage": 1
+        }
+      ],
+      "ports": {
+        "3433": {
+          "name": "Low VarDiff \u00b7 16K\u2013256K (SOLO)",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 16384,
+          "varDiff": {
+            "minDiff": 16384,
+            "maxDiff": 262144,
+            "targetTime": 30,
+            "retargetTime": 90,
+            "variancePercent": 30
+          },
+          "protocol": "stratum"
+        },
+        "3455": {
+          "name": "Medium VarDiff \u00b7 256K\u20132M (SOLO)",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 262144,
+          "varDiff": {
+            "minDiff": 262144,
+            "maxDiff": 2097152,
+            "targetTime": 30,
+            "retargetTime": 90,
+            "variancePercent": 30
+          },
+          "protocol": "stratum"
+        },
+        "3477": {
+          "name": "High VarDiff \u00b7 2M\u201316M (SOLO)",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 2097152,
+          "varDiff": {
+            "minDiff": 2097152,
+            "maxDiff": 16777216,
+            "targetTime": 30,
+            "retargetTime": 90,
+            "variancePercent": 30
+          },
+          "protocol": "stratum"
+        }
+      },
+      "daemons": [
+        {
+          "host": "btc-node",
+          "port": 8332,
+          "user": "btcrpcuser",
+          "password": "Password@1313"
+        }
+      ],
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 0.001,
+        "payoutScheme": "SOLO",
+        "payoutSchemeConfig": {
+          "factor": 2.0
+        }
+      },
+      "minerBonusPercentage": 0,
+      "enableAsicBoost": true,
+      "blockRefreshInterval": 500,
+      "jobRebroadcastTimeout": 10,
+      "clientConnectionTimeout": 600,
+      "banning": {
+        "enabled": true,
+        "time": 600,
+        "invalidPercent": 50,
+        "checkThreshold": 50
+      }
+    }
+  ]
+}

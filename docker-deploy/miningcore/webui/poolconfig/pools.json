@@ -1,0 +1,99 @@
+{
+  "pools": [{
+    "id": "octa",
+    "coin": {
+      "type": "OCTA",
+      "name": "OctaSpace",
+      "symbol": "OCTA",
+      "algorithm": "ethash",
+      "blockTime": 15,
+      "blockExplorer": "https://explorer.octa.space/",
+      "blockExplorerBlock": "https://explorer.octa.space/block/{0}",
+      "blockExplorerTx": "https://explorer.octa.space/tx/{0}",
+      "blockExplorerAddress": "https://explorer.octa.space/address/{0}"
+    },
+    "ports": {
+      "3032": {
+        "diff": 4.0,
+        "varDiff": {
+          "minDiff": 0.5,
+          "maxDiff": 16.0,
+          "targetTime": 15,
+          "retargetTime": 90,
+          "variancePercent": 30,
+          "maxDelta": 0.3,
+          "minDiffPrecision": 2
+        },
+        "desc": "Unified Pool (GPU & ASIC) - Recommended"
+      }
+    },
+    "daemons": [{
+      "host": "octa-node",
+      "port": 8545,
+      "user": "",
+      "password": ""
+    }],
+    "paymentProcessing": {
+      "enabled": true,
+      "minimumPayment": 0.1,
+      "payoutScheme": "PPLNS",
+      "payoutSchemeConfig": {
+        "factor": 2.0,
+        "pplnsTimeWindow": "00:10:00"
+      }
+    }
+  }, {
+    "id": "bch",
+    "coin": {
+      "type": "BCH",
+      "name": "Bitcoin Cash",
+      "symbol": "BCH",
+      "algorithm": "sha256",
+      "blockTime": 600,
+      "blockReward": 6.25,
+      "blockExplorer": "https://blockchair.com/bitcoin-cash/",
+      "blockExplorerBlock": "https://blockchair.com/bitcoin-cash/block/{0}",
+      "blockExplorerTx": "https://blockchair.com/bitcoin-cash/transaction/{0}",
+      "blockExplorerAddress": "https://blockchair.com/bitcoin-cash/address/{0}"
+    },
+    "ports": {
+      "3333": {
+        "diff": 0.5,
+        "varDiff": {
+          "minDiff": 0.125,
+          "maxDiff": 500000,
+          "targetTime": 15,
+          "retargetTime": 60,
+          "variancePercent": 30
+        }
+      },
+      "5555": {
+        "diff": 2.0,
+        "varDiff": {
+          "minDiff": 1.0,
+          "maxDiff": 1000000,
+          "targetTime": 15,
+          "retargetTime": 60,
+          "variancePercent": 30
+        }
+      }
+    },
+    "daemons": [{
+      "host": "bch-node",
+      "port": 8332,
+      "user": "rpcuser",
+      "password": "rpcpassword"
+    }],
+    "paymentProcessing": {
+      "enabled": true,
+      "minimumPayment": 0.01,
+      "payoutScheme": "PPLNS",
+      "payoutSchemeConfig": {
+        "factor": 2.0
+      }
+    },
+    "rewardRecipients": {
+      "YOUR_WALLET_ADDRESS": 1.0
+    }
+  }]
+}

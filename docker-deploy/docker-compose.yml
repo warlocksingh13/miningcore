@@ -1,0 +1,368 @@
+version: '3.8'
+
+networks:
+  miningcore-net:
+    external: true
+
+services:
+  btc-node:
+    container_name: btc-node
+    image: bitcoin/bitcoin:latest
+    restart: always
+    user: root
+    ports:
+      # BTC Node Ports (5000 series)
+      - "5001:5001"    # BTC JSON-RPC port
+      - "5002:5002"    # BTC P2P network port
+      - "5003:5003"   # BTC ZeroMQ port
+    volumes:
+      - ./coins/btc:/home/bitcoin/.bitcoin
+    entrypoint: ["/bin/bash", "-c"]
+    command: >
+      "chown -R bitcoin:bitcoin /home/bitcoin/.bitcoin && 
+      gosu bitcoin bitcoind -conf=/home/bitcoin/.bitcoin/bitcoin.conf -printtoconsole=1 -datadir=/home/bitcoin/.bitcoin"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "btc-node"
+    networks:
+      - miningcore-net
+
+  bch-node:
+    image: zquestz/bitcoin-cash-node:latest
+    container_name: bch-node
+    restart: always
+    user: root
+    ports:
+      - "8332:8332"  # RPC port
+      - "8333:8333"  # P2P port
+      - "28332:28332"  # ZMQ port
+    volumes:
+      - ./coins/bch:/data
+    command: bash -c "chmod 644 /data/bch.conf && bitcoind -conf=/data/bch.conf -printtoconsole=1 -datadir=/data"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "bch-node"
+    networks:
+      - miningcore-net
+
+  alph-node:
+    image: alephium/alephium:latest
+    container_name: alph-node
+    restart: unless-stopped
+    user: root
+    ports:
+      # ALPH Node Ports
+      - "9973:9973"    # ALPH P2P network port
+      - "12973:12973"  # ALPH REST API port (used by MiningCore)
+      - "10973:10973"  # ALPH WebSocket port
+    volumes:
+      - ./coins/alph/.alephium:/alephium-home/.alephium
+      - ./coins/alph/.alephium-wallets:/alephium-home/.alephium-wallets
+    environment:
+      - ALEPHIUM_HOME=/alephium-home/.alephium
+      - ALEPHIUM_NETWORK=mainnet
+      - ALPH_API_KEY=e8d8e8a8b8c8d8e8f8a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6
+      - JAVA_OPTS=-Xmx4G -Xms4G -XX:+UseZGC -XX:MaxGCPauseMillis=200
+    mem_limit: 8g
+    mem_reservation: 6g
+    cpus: 2
+    networks:
+      - miningcore-net
+
+  octa-node:
+    image: octaspace/go-octa:latest
+    container_name: octa-node
+    restart: unless-stopped
+    ports:
+      - "38000:38000"  # P2P port (TCP)
+      - "38000:38000/udp"  # P2P discovery (UDP)
+      - "8545:8545"    # HTTP RPC port
+      - "8546:8546"    # WebSocket RPC port
+    volumes:
+      - ./coins/octa:/octa-data
+    entrypoint: ["/bin/sh","-lc"]
+    command: >
+      'EXTRA="";
+       if [ -n "$${OCTA_NETSTATS}" ]; then EXTRA="$$EXTRA --ethstats=$${OCTA_NETSTATS}"; fi;
+       if [ -n "$${OCTA_BOOTNODES}" ]; then EXTRA="$$EXTRA --bootnodes=$${OCTA_BOOTNODES}"; fi;
+       exec geth \
+        --datadir=/octa-data/.octa \
+        --port=38000 \
+        --nat=extip:localhost \
+        --http \
+        --http.addr=0.0.0.0 \
+        --http.port=8545 \
+        --http.api=eth,net,web3,miner \
+        --http.vhosts=* \
+        --http.corsdomain=* \
+        --ws \
+        --ws.addr=0.0.0.0 \
+        --ws.port=8546 \
+        --ws.api=eth,net,web3 \
+        --ws.origins=* \
+        --maxpeers=128 \
+        --syncmode=full \
+        --gpo.maxprice=1000000000 \
+        --rpc.gascap=21000000000 \
+        --cache=512 \
+        --miner.etherbase=0xccAADE651EB1c24806CecA398D5fCAD9aAfA4D19 \
+        --mine \
+        --miner.threads=1 \
+        --ethash.dagdir=/octa-data/ethash \
+        $$EXTRA'
+    environment:
+      - OCTA_NETSTATS=
+      - OCTA_BOOTNODES=enode://972eeb44600aa1abb4bb21e57ddf31808da7b013f92b0206e13359105e28f9b02a27d9b7d44275480ba67b9899a1f8c1491a7f026ddc6f0362a7a8862d1d67a6@51.89.166.66:38000,enode://d3fce049acb6d4b77a81e553ba842ade85d5e241ce5258182a6960adbcf0baf3ae1c1f71822330ade8fe6cffbe3f1b879a3a96a54a10d9a8cd1fb77b8bcba723@5.78.127.110:38000,enode://e86b4080455c4a847c1f856b1b0a1665bd0d5bb0ebd66144c1f9bdd397684c284a2d7d2ccec30cb61f8f5a9190f5a45301b7d757db3de6ff88a0a7c853f085fd@51.79.157.57:38000,enode://1765ab9ff98dfd604c0e3766d56f53de5c93b722aae491ba816b6c5f2b49b33ba50ed0b5d093862b3873f0f6cc2bb07ed8f04d309a784ea5aa259204ad0daf40@5.161.51.216:38000,enode://fcaa7ba9b8d6e0851caf59f7fe7fd931e5676041b53467fab99d312fec2cfdc810666ddc901ac8ddde548bce5070f337c813727671b2dc5fdab047443e443c8f@51.77.222.172:38000
+    networks:
+      - miningcore-net
+
+  dgb-node:
+    image: theretromike/nodes:digibyte
+    container_name: dgb-node
+    restart: unless-stopped
+    ports:
+      - "14022:14022"   # RPC port
+      - "12024:12024"   # P2P port
+    volumes:
+      - ./coins/dgb:/root/.digibyte
+    command:
+      - /usr/bin/digibyted
+      - -conf=/root/.digibyte/digibyte.conf
+      - -datadir=/root/.digibyte
+      - -printtoconsole
+    networks:
+      - miningcore-net
+
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./monitoring/prometheus/config:/etc/prometheus
+      - ./monitoring/prometheus/data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+
+  webui2:
+    build: 
+      context: ./webui2
+      dockerfile: Dockerfile
+    container_name: webui2
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_BASE_URL=http://miningcore:4000
+      - NEXT_PUBLIC_STRATUM_HOST=localhost
+    networks:
+      - miningcore-net
+    restart: unless-stopped
+
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    user: root
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=Password@1313
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION_ORG=true
+      - GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION_ORG_ROLE=Admin
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+    volumes:
+      - ./monitoring/grafana/data:/var/lib/grafana
+      - ./monitoring/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - "3001:3000"
+    networks:
+      - miningcore-net
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: miningcore
+      POSTGRES_PASSWORD: Password@1313
+      POSTGRES_DB: miningcore
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - miningcore-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U miningcore -d miningcore"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  miningcore:
+    container_name: miningcore
+    image: blackmennewstyle-miningcore:latest
+    build:
+      context: .
+      dockerfile: ./miningcore/Dockerfile
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "4000:4000"  # API port
+      - "3333:3333"  # Standard stratum port
+      - "5008:5008"  # OCTA stratum v1
+      - "5108:5108"  # OCTA low-diff stratum v1
+      - "6003:6003"  # General ASIC port
+      - "6103:6103"  # NerdMiner port
+      # BTC PPLNS tiers
+      - "3355:3355"
+      - "3377:3377"
+      # BTC SOLO tiers
+      - "3433:3433"
+      - "3455:3455"
+      - "3477:3477"
+      # BCH PPLNS tiers (varDiff ranges)
+      - "7002:7002"
+      - "8002:8002"
+      - "9002:9002"
+      - "5105:5105"  # BCH NerdMiner (PPLNS)
+      # BCH SOLO tiers
+      - "5004:5004"
+      - "5204:5204"
+      - "5304:5304"
+      - "5104:5104"  # BCH NerdMiner (SOLO)
+      # OCTA pools per config
+      - "8008:8008"
+      - "8018:8018"
+      - "8028:8028"
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ./miningcore/config/config.json:/app/config.json
+      - ./miningcore/coins.json:/app/coins.json
+      - ./miningcore/coins.json:/app/build/coins.json
+      - ./logs/miningcore:/var/log/miningcore
+      - ./coins/bch:/coins/bch
+      - ./coins/octa:/coins/octa
+      - ./coins/alph:/coins/alph
+    environment:
+      - TZ=Asia/Kolkata
+      - MININGCORE_HOST=0.0.0.0
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:4000
+    networks:
+      - miningcore-net
+
+  
+
+  
+
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/logs:/var/log/nginx
+      - ./nginx/html:/usr/share/nginx/html
+    networks:
+      - miningcore-net
+
+  webui:
+    build: 
+      context: ./webui
+      dockerfile: Dockerfile
+    container_name: webui
+    restart: always
+    ports:
+      - "3000:80"
+    environment:
+      - API_URL=http://miningcore:4000/api/
+    networks:
+      - miningcore-net
+    depends_on:
+      - miningcore
+
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - DOZZLE_BASE=/
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - miningcore-net
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker:/var/lib/docker
+    command: --interval 3600 --cleanup
+    networks:
+      - miningcore-net
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    user: root
+    command:
+      - --path.procfs=/host-proc
+      - --path.sysfs=/host-sys
+      - --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)
+    volumes:
+      - /proc:/host-proc:ro
+      - /sys:/host-sys:ro
+    network_mode: host
+    pid: host
+    privileged: true
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093/alertmanager/'
+      - '--web.route-prefix=/'
+    networks:
+      - miningcore-net
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  alertmanager_data:

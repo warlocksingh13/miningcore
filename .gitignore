@@ -118,3 +118,8 @@ logs/
 ###########################
 src/Miningcore/config.json
 src/Miningcore/config2.json
+# Docker deployment runtime artifacts
+/docker-deploy/monitoring/grafana/data/*
+!/docker-deploy/monitoring/grafana/data/.gitkeep
+/docker-deploy/monitoring/prometheus/data/*
+!/docker-deploy/monitoring/prometheus/data/.gitkeep
